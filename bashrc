@@ -4,25 +4,25 @@ test -f ~/.bashrc.local && source ~/.bashrc.local
 alias ll="ls -al"
 alias vi="vim"
 alias h="history"
-alias psu="ps -fu root"
+alias psu="ps -fu $USER"
 
 
-if [ "/bin/bash" = "/bin/bash" ]
+if [ "$SHELL" = "/bin/bash" ]
 then
   # Change the window title of X terminals
-  case xterm-256color in
+  case ${TERM} in
     xterm*|rxvt*|Eterm|aterm|kterm|gnome*|interix)
-      PROMPT_COMMAND='echo -ne "\033]0;root@ubuntu-12-64-02:~/src/puppetlabs-rcfiles\007"'
+      PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}\007"'
       ;;
     screen*)
-      PROMPT_COMMAND='echo -ne "\033_root@ubuntu-12-64-02:~/src/puppetlabs-rcfiles\033\"'
+      PROMPT_COMMAND='echo -ne "\033_${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}\033\\"'
       ;;
   esac
 
-  if [[ 0 == 0 ]] ; then
-    PS1='\[\033[01;31m\]\h\[\033[01;34m\] \W $\[\033[00m\] '
+  if [[ ${EUID} == 0 ]] ; then
+    PS1='\[\033[01;31m\]\h\[\033[01;34m\] \W \$\[\033[00m\] '
   else
-    PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] \W $\[\033[00m\] '
+    PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] \W \$\[\033[00m\] '
   fi
 fi
 
