@@ -5,8 +5,8 @@
 DOTFILES=`pwd`
 
 # bash
-mv ~/.bashrc ~/.bashrc.local 2> /dev/null
-ln -s $DOTFILES/bashrc ~/.bashrc
+test -f ~/.bashrc && mv ~/.bashrc ~/.bashrc.local 2> /dev/null
+ln -sfn $DOTFILES/bashrc ~/.bashrc
 touch ~/.bashrc.local
 
 # vim
@@ -16,8 +16,8 @@ ln -s $DOTFILES/vimrc ~/.vimrc
 ln -s $DOTFILES/vim ~/.vim
 
 # screen
-#mv ~/.screenrc ~/.screenrc.old 2> /dev/null
-#ln -s $DOTFILES/screenrc ~/.screenrc
+mv ~/.screenrc ~/.screenrc.old 2> /dev/null
+ln -s $DOTFILES/screenrc ~/.screenrc
 
 # tmux
 #mv ~/.tmux.conf ~/.tmux.conf.old 2> /dev/null
