@@ -32,3 +32,11 @@ au BufWinEnter * let w:m3=matchadd('ErrorMsg', '\s\+$', -1)
 " Give an indicator of spaces before a tab.
 au BufWinEnter * let w:m4=matchadd('ErrorMsg', ' \+\ze\t', -1)
 
+" Some distros disable this for security reasons
+set modeline
+highlight Comment ctermfg=Green
+set ignorecase
+set incsearch
+highlight Comment ctermfg=LightBlue
+highlight LineNr ctermfg=black ctermbg=grey guifg=black guibg=grey
+
