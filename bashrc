@@ -1,6 +1,7 @@
 # This will normally be the backup of the default .bashrc
 test -f ~/.bashrc.local && source ~/.bashrc.local
 
+alias ls="ls --color=auto"
 alias ll="ls -al"
 alias vi="vim"
 alias h="history"
