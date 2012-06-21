@@ -20,8 +20,8 @@ test -f ~/.screenrc && mv ~/.screenrc ~/.screenrc.old 2> /dev/null
 ln -sfn $DOTFILES/screenrc ~/.screenrc
 
 # tmux
-#test -f ~/.tmux.conf && mv ~/.tmux.conf ~/.tmux.conf.old 2> /dev/null
-#ln -s $DOTFILES/tmux.conf ~/.tmux.conf
+test -f ~/.tmux.conf && mv ~/.tmux.conf ~/.tmux.conf.old 2> /dev/null
+ln -s $DOTFILES/tmux.conf ~/.tmux.conf
 
 # dircolors
 #test -f ~/.dir_colors && mv ~/.dir_colors ~/.dir_colors.old 2> /dev/null
