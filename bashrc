@@ -8,6 +8,8 @@ alias h="history"
 alias psu="ps -fu $USER"
 
 
+PATH="$PATH:$HOME/bin"
+
 if [ "$SHELL" = "/bin/bash" ]
 then
   # Change the window title of X terminals
