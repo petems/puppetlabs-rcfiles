@@ -42,16 +42,19 @@ function start_agent {
 
 if [ -t 0 ]
 then
-
-  # Source SSH settings, if applicable
-  if [ -f "${SSH_ENV}" ]; then
-    . ${SSH_ENV} >& /dev/null
-    #ps ${SSH_AGENT_PID} doesnt work under cywgin
-    ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ >& /dev/null || {
-    start_agent;
-  }
-  else
-    start_agent;
+  # Check if $HOME/.ssh exists before starting ssh-agent
+  if [ -d $HOME/.ssh ]
+  then
+    # Source SSH settings, if applicable
+    if [ -f "${SSH_ENV}" ]; then
+      . ${SSH_ENV} >& /dev/null
+      #ps ${SSH_AGENT_PID} doesnt work under cywgin
+      ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ >& /dev/null || {
+      start_agent;
+    }
+    else
+      start_agent;
+    fi
   fi
 fi
 
