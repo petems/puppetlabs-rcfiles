@@ -44,3 +44,6 @@ set incsearch
 highlight Comment ctermfg=LightBlue
 highlight LineNr ctermfg=black ctermbg=grey guifg=black guibg=grey
 
+set mouse=a
+
+
