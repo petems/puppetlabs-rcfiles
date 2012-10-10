@@ -61,3 +61,5 @@ bindkey -m "^[[6;2~" stuff ^f
 
 bind R eval "source ~/.screenrc" "echo '.screenrc reloaded!'"
 
+source ${HOME}/.screenrc.local
+
