@@ -4,6 +4,7 @@
 " This should be useful for presentations, demos, and training.
 
 set nocompatible
+set nowrap
 filetype plugin on
 filetype indent on
 syntax enable
