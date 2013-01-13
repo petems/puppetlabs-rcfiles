@@ -3,7 +3,7 @@ test -f ~/.bashrc.local && source ~/.bashrc.local
 
 export EDITOR=vim
 
-alias ls="ls --color=auto"
+#alias ls="ls --color=auto"
 alias ll="ls -al"
 alias vi="vim"
 alias h="history"
