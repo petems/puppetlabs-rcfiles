@@ -39,6 +39,7 @@ endif
 
 " Some distros disable this for security reasons
 set modeline
+set modelines=2
 highlight Comment ctermfg=Green
 set ignorecase
 set incsearch
