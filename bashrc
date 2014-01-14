@@ -11,6 +11,7 @@ alias psu="ps -fu $USER"
 
 
 PATH="$PATH:$HOME/bin"
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
 if [ "$SHELL" = "/bin/bash" ]
 then
