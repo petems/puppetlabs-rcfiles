@@ -61,4 +61,8 @@ then
   fi
 fi
 
+# Include Boxen environment (if present)
+test -f /opt/boxen/env.sh && source /opt/boxen/env.sh
+
+
 # ex: set et sw=2 ts=2 filetype=sh:
