@@ -27,6 +27,9 @@ ln -s $DOTFILES/tmux.conf ~/.tmux.conf
 #test -f ~/.dir_colors && mv ~/.dir_colors ~/.dir_colors.old 2> /dev/null
 #ln -s $DOTFILES/dircolors/dircolors.ansi-dark ~/.dir_colors
 
+ln -sfn $DOTFILES/gemrc ~/.gemrc
+
+
 #git submodule update --init
 
 
