@@ -11,7 +11,13 @@ alias psu="ps -fu $USER"
 
 
 PATH="$PATH:$HOME/bin"
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+
+# Check for rbenv
+if which rbenv >& /dev/null
+then
+  eval "$(rbenv init -)"
+fi
+
 
 if [ "$SHELL" = "/bin/bash" ]
 then
@@ -25,11 +31,11 @@ then
       ;;
   esac
 
-#  if [[ ${EUID} == 0 ]] ; then
-#    PS1='\[\033[01;31m\]\h\[\033[01;34m\] \W \$\[\033[00m\] '
-#  else
-#    PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] \W \$\[\033[00m\] '
-#  fi
+  if [[ ${EUID} == 0 ]] ; then
+    PS1='\[\033[01;31m\]\h\[\033[01;34m\] \W \$\[\033[00m\] '
+  else
+    PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] \W \$\[\033[00m\] '
+  fi
 fi
 
 SSH_ENV=$HOME/.ssh/environment
