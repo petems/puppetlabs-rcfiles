@@ -12,6 +12,13 @@ alias psu="ps -fu $USER"
 
 PATH="$PATH:$HOME/bin"
 
+# Check for rbenv
+if which rbenv >& /dev/null
+then
+  eval "$(rbenv init -)"
+fi
+
+
 if [ "$SHELL" = "/bin/bash" ]
 then
   # Change the window title of X terminals
@@ -59,5 +66,8 @@ then
     fi
   fi
 fi
+
+# Include Boxen environment (if present)
+test -f /opt/boxen/env.sh && source /opt/boxen/env.sh
 
 # ex: set et sw=2 ts=2 filetype=sh:
