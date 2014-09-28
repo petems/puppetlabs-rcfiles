@@ -63,4 +63,3 @@ set diffopt+=iwhite
 
 set mouse=a
 
-
