@@ -9,13 +9,17 @@ alias vi="vim"
 alias h="history"
 alias psu="ps -fu $USER"
 
-
-PATH="$PATH:$HOME/bin"
+_PATH="${PATH/:\/usr\/local\/bin}"
+PATH="/usr/local/bin:$_PATH:$HOME/bin"
 
 # Check for rbenv
 if which rbenv >& /dev/null
 then
   eval "$(rbenv init -)"
+fi
+
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+  . $(brew --prefix)/etc/bash_completion
 fi
 
 
