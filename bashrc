@@ -1,16 +1,32 @@
+# ex: set et sw=2 ts=2 filetype=sh:
 # This will normally be the backup of the default .bashrc
 test -f ~/.bashrc.local && source ~/.bashrc.local
 
 export EDITOR=vim
 
-#alias ls="ls --color=auto"
+alias ls="ls --color=auto"
 alias ll="ls -al"
 alias vi="vim"
 alias h="history"
 alias psu="ps -fu $USER"
+alias be="bundle exec"
 
-_PATH="${PATH/:\/usr\/local\/bin}"
-PATH="/usr/local/bin:$_PATH:$HOME/bin"
+# Mac OS X
+if [ "$(uname -s)" == "Darwin" ]
+then
+  if [ -f $(brew --prefix)/etc/bash_completion ]; then
+    . $(brew --prefix)/etc/bash_completion
+  fi
+
+  # Homebrew should be first so we can override system tools
+  PATH="/usr/local/bin:${PATH/:\/usr\/local\/bin}"
+
+  # coreutils should be first
+  PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+  MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+
+fi
+PATH="$PATH:$HOME/bin"
 
 # Check for rbenv
 if which rbenv >& /dev/null
@@ -18,10 +34,7 @@ then
   eval "$(rbenv init -)"
 fi
 
-if [ -f $(brew --prefix)/etc/bash_completion ]; then
-  . $(brew --prefix)/etc/bash_completion
-fi
-
+test -f /usr/local/etc/bash_completion && source /usr/local/etc/bash_completion
 
 if [ "$SHELL" = "/bin/bash" ]
 then
@@ -74,4 +87,6 @@ fi
 # Include Boxen environment (if present)
 test -f /opt/boxen/env.sh && source /opt/boxen/env.sh
 
-# ex: set et sw=2 ts=2 filetype=sh:
+# added by travis gem
+[ -f /Users/fvoges/.travis/travis.sh ] && source /Users/fvoges/.travis/travis.sh
+
