@@ -47,12 +47,15 @@ snippet elsif
 		${5:# default}
 	}${6}
 snippet case
-	case ${1:$operatingsystem} {
-		${2:"centos", "redhat"}: {
+	case ${1:$::osfamily} {
+		${2:'redhat'}: {
 			${3:# statements about $2}
 		}
-		"${4:default}": {
+		${4:'debian'}: {
 			${5:# statements about $4}
+		}
+		'${6:default}': {
+			${7:# statements about $6}
 		}
 	}${6}
 snippet ?
@@ -61,8 +64,7 @@ snippet ?
 		default => '${4}',
 	}${5}
 snippet cron
-	cron {
-		'${1:name}':
+	cron { '${1:name}':
 		  command => '${2:command}',
 			hour    => '${3:hour}',
 			minute  => '${4:minute}',
@@ -75,8 +77,7 @@ snippet File
 	  mode  => '${3:0644}',
 	}${4}
 snippet file
-	file {
-	  '${1:/path/to/file}':
+	file { '${1:/path/to/file}':
 		  ensure  => '${3:directory, file, link, absent}',
 	    source  => "puppet:///modules/${module_name}/${2:$1}",
 			owner   => '${4:root}',
@@ -89,19 +90,17 @@ snippet Exec
 		path => '${1:/bin:/sbin:/usr/bin:/usr/sbin}',
 	}${2}
 snippet exec
-	exec {
-		'${1:/usr/bin/}':
-		  command     => '${2}',
+	exec { '${1}':
+			path        => '${2:"/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin"}'
+		  command     => '${3}',
 			refreshonly => true,
 	}${3}
 snippet package
-	package {
-		'${1:package}':
+	package { '${1:package}':
 		  ensure => ${2:present, latest, absent, purge},
 	}
 snippet user
-	user {
-		'${1:username}':
+	user { '${1:username}':
 		  ensure     => ${2:present, absent},
 			home       => '${3:/home/$1}',
 			uid        => '${4:333}',
@@ -162,7 +161,7 @@ snippet define::add Config Chunk
 	}
 
 	# ex: set et sw=2 ts=2 ft=puppet:
-snippet class
+snippet class Basic
 	# Class: ${1:myclass}
 	#
 	# ${2:class description goes here.}
@@ -177,17 +176,42 @@ snippet class
 	# ${3:Class' use example goes here.}
 	#
 	class $1 (
-		$enabled = hiera('$1_enabled'),
-		$ensure = hiera('$1_ensure')
-	) {
-		anchor { '$1::begin': }~>
-		class { '$1::package': }~>
-		class { '$1::config': }~>
-		class { '$1::service': }~>
-		anchor { '$1::end': }
+		${2:# class parameters}
+	) ${3:inherits $1::params} {
+
+		${4:# code}
+
 	}
 	# ex: set et sw=2 ts=2 ft=puppet:
-snippet class::
+snippet class Package, Config, Service, Params Pattern
+	# Class: ${1:myclass}
+	#
+	# ${2:class description goes here.}
+	#
+	# == Parameters
+	# [*enabled*]
+	#   Enable $1's module and its services (default: 'true').
+	# [*ensure*]
+	#   Package's ensure attribute (default: 'installed').
+	# == Examples
+	#
+	# ${3:Class' use example goes here.}
+	#
+	class $1 (
+		$pkg_ensure  = $1::params::pkg_ensure,
+		$svc_enabled = $1::params::svc_enabled,
+		$svc_ensure  = $1::params::svc_ensure,
+	) inherits $1::params {
+
+		anchor { '$1::begin': }->
+		class { '$1::package': }->
+		class { '$1::config': }~>
+		class { '$1::service': }->
+		anchor { '$1::end': }
+
+	}
+	# ex: set et sw=2 ts=2 ft=puppet:
+snippet ::class
 	# Class: ${1:parentclass}::${2:myclass}
 	#
 	# ${3:class description goes here.}
@@ -200,10 +224,10 @@ snippet class::
 	#
 	# == Examples
 	#
-	class $1::$2 inherits $1 {
+	class $1::$2 {
 		${3:# statements}
 	}
-snippet class::config File
+snippet ::config File
 	# Class: $1::config
 	#
 	# This class sets up configuration files for module $1.
@@ -224,7 +248,7 @@ snippet class::config File
 	  }
 	}
 	# ex: set et sw=2 ts=2 ft=puppet:
-snippet class::config Template
+snippet ::config Template
 	# Class: $1::config
 	#
 	# This class sets up configuration files for module $1.
@@ -245,7 +269,7 @@ snippet class::config Template
 	  }
 	}
 	# ex: set et sw=2 ts=2 ft=puppet:
-snippet class::config Concat Module
+snippet ::config Concat Module
 	# Class: $1::config
 	#
 	# This class sets up configuration files for module $1.
@@ -258,7 +282,6 @@ snippet class::config Concat Module
 	#   Depends on Class['concat::setup']
 	#
 	class ${1:parentclass}::config {
-		Class { require => Class['concat::setup'], }
 
 	  concat { $$1::config_file:
 	    owner => '${2:root}',
@@ -273,28 +296,34 @@ snippet class::config Concat Module
 	  }
 	}
 	# ex: set et sw=2 ts=2 ft=puppet:
-snippet class::package
+snippet ::package
 	# This class will install the packages for $1.
 	#
 	# *Note*: This class should not be used externally.
-	class ${1:parentclass}::package ($ensure = $$1::ensure) {
-	  package { '${2:package_name}' : ensure => $ensure }
-
+	class ${1:parentclass}::package (
+		$pkg_ensure = $$1::params::pkg_ensure,
+		$pkg_name   = $$1::params::pkg_name,
+	) inherits $1::params {
+	  package { $pkg_name:
+	  	ensure => $pkg_ensure,
+	  }
 	}
 
 	# ex: set ts=2 et sw=2 filetype=puppet:
-snippet class::params
+snippet ::params
 	# This class provides parameters for all the other classes in the
 	# module $1.
 	class ${1:parentclass}::params {
 
-		$$1_ensure = '${2:installed}'
-	  $$1_enabled = '${3:true}'
+		$pkg_ensure  = '${2:installed}'
+		$pkg_name  	 = '${3:$1}'
+	  $svc_enabled = ${4:true}
+	  $svc_name 	 = '${5:$1}'
 
-		${4:# Extra params here...}
+		${6:# Extra params here...}
 	}
 	# ex: set ts=2 et sw=2 ft=puppet:
-snippet class::service
+snippet ::service
 	# This class manages services for $1.
 	class ${1:parentclass}::service ($enabled = $$1::enabled){
 	  if $enabled == 'true' {
