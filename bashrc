@@ -14,8 +14,10 @@ alias be="bundle exec"
 # Mac OS X
 if [ "$(uname -s)" == "Darwin" ]
 then
-  if [ -f $(brew --prefix)/etc/bash_completion ]; then
-    . $(brew --prefix)/etc/bash_completion
+  if [ -d /opt/boxen ]
+  then
+    PATH="/opt/boxen/homebrew/bin:$PATH"
+    PATH="$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:$PATH"
   fi
 
   # Homebrew should be first so we can override system tools
@@ -24,6 +26,10 @@ then
   # coreutils should be first
   PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
   MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+
+  if [ -f $(brew --prefix)/etc/bash_completion ]; then
+    . $(brew --prefix)/etc/bash_completion
+  fi
 
 fi
 PATH="$PATH:$HOME/bin"
