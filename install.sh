@@ -1,62 +1,39 @@
 #!/bin/bash
-# Taken from https://github.com/brantb/dotfiles/blob/master/install.sh
 
-# Run this from the dotfiles dir
-DOTFILES=`pwd`
+# Find the dotfiles dir
+DOTFILES="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+
+function create_link() {
+  SOURCE="$1"
+  FILE="$2"
+  SUFFIX="$3"
+  if [ -h ~/.$FILE ]
+  then
+    echo "WARNING: ~/.${FILE} is a symlink. Skipping it"
+    return
+  fi
+  if [ -f ~/.$FILE ]
+  then
+    mv ~/.$FILE{,.$SUFFIX}
+  fi
+  ln -sfn $SOURCE/$FILE ~/.$FILE
+}
 
 # bash
-if [ ! -f ~/.bashrc.local ]
-then
-  test -f ~/.bashrc && mv ~/.bashrc ~/.bashrc.local 2> /dev/null
-  ln -sfn $DOTFILES/bashrc ~/.bashrc
-  touch ~/.bashrc.local
-fi
+create_link $DOTFILES bashrc local
 
 # vim
-if [ ! -f ~/.vimrnc.old ]
-then
-  test -f ~/.vimrc && mv ~/.vimrc ~/.vimrc.old 2> /dev/null
-  ln -sfn $DOTFILES/vimrc ~/.vimrc
-  touch ~/.vimrc.old
-fi
-if [ ! -f ~/.vim.old ]
-then
-  test -d ~/.vim && mv ~/.vim ~/.vim.old 2> /dev/null
-  ln -sfn $DOTFILES/vim ~/.vim
-  touch ~/.vim.old
-fi
+create_link $DOTFILES vimrc old
+create_link $DOTFILES vim old
 
-# screen
-if [ ! -f ~/.screenrc.old ]
-then
-  test -f ~/.screenrc && mv ~/.screenrc ~/.screenrc.old 2> /dev/null
-  ln -sfn $DOTFILES/screenrc ~/.screenrc
-  touch ~/.screenrc.old
-fi
+# screenc
+create_link $DOTFILES screenrc old
 
 # tmux
-if [ ! -f ~/.tmux.conf.old ]
-then
-  test -f ~/.tmux.conf && mv ~/.tmux.conf ~/.tmux.conf.old 2> /dev/null
-  ln -s $DOTFILES/tmux.conf ~/.tmux.conf
-  touch ~/.tmux.conf.old
-fi
+create_link $DOTFILES tmux.conf old
 
-# dircolors
-#if [ ! -f ~/.dir_colors.old ]
-#then
-#  test -f ~/.dir_colors && mv ~/.dir_colors ~/.dir_colors.old 2> /dev/null
-#  ln -s $DOTFILES/dircolors/dircolors.ansi-dark ~/.dir_colors
-#  touch ~/.dir_colors.old
-#fi
+# gemrc
+create_link $DOTFILES gemrc old
 
-if [ ! -f ~/.gemrc.old ]
-then
-  test -f ~/.gemrc && mv ~/.gemrc ~/.gemrc.old 2> /dev/null
-  ln -s $DOTFILES/gemrc ~/.gemrc
-  touch ~/.gemrc.old
-fi
-
-#git submodule update --init
 
 
