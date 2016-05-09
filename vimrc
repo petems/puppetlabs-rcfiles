@@ -63,3 +63,22 @@ set diffopt+=iwhite
 
 set mouse=a
 
+"set t_Co=256
+set background=dark
+let g:solarized_termcolors=256
+
+colorscheme wombat256mod
+let g:airline_powerline_fonts = 1
+let g:airline_theme='wombat'
+let g:airline#extensions#hunks#enabled = 0
+
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+
+map <C-n> :NERDTreeToggle<CR>
+
+if has('mouse_sgr')
+  set ttymouse=sgr
+endif
+
+
