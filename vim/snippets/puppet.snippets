@@ -9,9 +9,10 @@ snippet "
 snippet $
 	${${1:variable}}${2}
 snippet :
-	'${1:title}':${2}
+	'${1:title}':
+	${2}
 snippet =>
-	${1:attribute} => '${2:value}',
+	${1:attribute} => ${2:'value'},
 	${3}
 snippet +>
 	${1:attribute} +> ${2:append_value},
@@ -30,22 +31,25 @@ snippet <~
 	${4}
 snippet if
 	if (${1:conditional}) {
-	  ${2:# statements}
-	}${3}
+		${2:# statements}
+	}
+	${3}
 snippet else
 	if (${1:conditional}) {
-	  ${2:# statements}
+		${2:# statements}
 	} else {
 		${3:# default}
-	}${4}
+	}
+	${4}
 snippet elsif
 	if (${1:conditional}) {
-	  ${2:# statements}
+		${2:# statements}
 	} elsif (${3:conditional}) {
 		${4:# statements}
 	} else {
 		${5:# default}
-	}${6}
+	}
+	${6}
 snippet case
 	case ${1:$::osfamily} {
 		${2:'redhat'}: {
@@ -55,60 +59,69 @@ snippet case
 			${5:# statements about $4}
 		}
 		'${6:default}': {
-			${7:# statements about $6}
+			${7:fail("${module_name}: unsuported on ${::operatingsystem}.")}
 		}
-	}${6}
+	}
+	${6}
 snippet ?
 	$${1:variable} ? {
 		'${2}'  => '${3}',
 		default => '${4}',
-	}${5}
+	}
+	${5}
 snippet cron
 	cron { '${1:name}':
-		  command => '${2:command}',
+			command => '${2:command}',
 			hour    => '${3:hour}',
 			minute  => '${4:minute}',
 			day     => '${5:day}',
-	}${6}
+	}
+	${6}
 snippet File
 	File {
-	  owner => '${1:root}',
-	  group => '${2:$1}',
-	  mode  => '${3:0644}',
-	}${4}
+		owner => '${1:root}',
+		group => '${2:$1}',
+		mode  => '${3:0644}',
+	}
+	${4}
 snippet file
 	file { '${1:/path/to/file}':
-		  ensure  => '${3:directory, file, link, absent}',
-	    source  => "puppet:///modules/${module_name}/${2:$1}",
-			owner   => '${4:root}',
-			group   => '${5:root}',
-			mode    => '${6:0644}',
-			recurse => '${7:false}',
-	}${8}
+		ensure  => '${3:directory, file, link, absent}',
+		source  => "puppet:///modules/${module_name}/${2:$1}",
+		owner   => '${4:root}',
+		group   => '${5:root}',
+		mode    => '${6:0644}',
+		recurse => '${7:false}',
+	}
+	${8}
 snippet Exec
 	Exec {
 		path => '${1:/bin:/sbin:/usr/bin:/usr/sbin}',
-	}${2}
+	}
+	${2}
 snippet exec
 	exec { '${1}':
-			path        => '${2:"/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin"}'
-		  command     => '${3}',
-			refreshonly => true,
-	}${3}
+		path        => '${2:"/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin"}'
+		command     => '${3}',
+		refreshonly => true,
+	}
+	${3}
 snippet package
 	package { '${1:package}':
-		  ensure => ${2:present, latest, absent, purge},
+		ensure => ${2:present, latest, absent, purge},
 	}
+	${3}
 snippet user
 	user { '${1:username}':
-		  ensure     => ${2:present, absent},
-			home       => '${3:/home/$1}',
-			uid        => '${4:333}',
-			gid        => '${5:$4}',
-			comment    => '${6:$1 account}',
-			password   => '!!',
-			shell      => '${7:/bin/bash, /bin/false, /sbin/nologin, /bin/zsh, /bin/tcsh}',
-	}${8}
+		ensure   => ${2:present, absent},
+		home     => '${3:/home/$1}',
+		uid      => '${4:333}',
+		gid      => '${5:$4}',
+		comment  => '${6:$1 account}',
+		password => '!!',
+		shell    => '${7:/bin/bash}',
+	}
+	${8}
 snippet define
 	# Define: ${1:mydefinedtype}
 	#
@@ -122,8 +135,10 @@ snippet define
 	#
 	# == Example
 	#
-	define $1($3) {
-	  ${4:# statements}
+	define $1 (
+		$3
+	) {
+		${4:# statements}
 	}
 	# EOF
 snippet define::add Config Chunk
@@ -145,19 +160,22 @@ snippet define::add Config Chunk
 	#      content => template("${module_name}/myconfigchunk.erb"),
 	#    }
 	#  }
-	define ${1:parentclass}::config::add($content='', $order=15) {
-	  class { '$1::params': }
-	  if $content == '' {
-	    $body = $name
-	  } else {
-	    $body = $content
-	  }
+	define ${1:parentclass}::config::add(
+		$content = '',
+		$order   = 15,
+	) {
+		if ($content == '') {
+			$body = $name
+		} else {
+			$body = $content
+		}
 
-	  concat::fragment{"${$1::config_file}_fragment_$name":
-	    target  => $$1::config_file,
-	    content => $body,
-	    order   => $order,
-	  }
+		concat::fragment{"${$1::config_file}_fragment_$name":
+			target  => $$1::config_file,
+			content => $body,
+			order   => $order,
+		}
+		${2}
 	}
 
 	# ex: set et sw=2 ts=2 ft=puppet:
@@ -167,24 +185,19 @@ snippet class Basic
 	# ${2:class description goes here.}
 	#
 	# == Parameters
-	# [*enabled*]
-	#   Enable $1's module and its services (default: 'true').
-	# [*ensure*]
-	#   Package's ensure attribute (default: 'installed').
 	# == Examples
 	#
 	# ${3:Class' use example goes here.}
 	#
 	class $1 (
-		${2:# class parameters}
-	) ${3:inherits $1::params} {
+		${4:# class parameters}
+	) ${5:inherits $1::params} {
 
-		${4:# code}
-
+		${6:# code}
 	}
 	# ex: set et sw=2 ts=2 ft=puppet:
 snippet class Package, Config, Service, Params Pattern
-	# Class: ${1:myclass}
+	# Class: $1
 	#
 	# ${2:class description goes here.}
 	#
@@ -192,23 +205,23 @@ snippet class Package, Config, Service, Params Pattern
 	# [*enabled*]
 	#   Enable $1's module and its services (default: 'true').
 	# [*ensure*]
-	#   Package's ensure attribute (default: 'installed').
+	#   Package's ensure attribute (default: 'present').
 	# == Examples
 	#
 	# ${3:Class' use example goes here.}
 	#
-	class $1 (
+	class ${1:myclass} (
 		$pkg_ensure  = $1::params::pkg_ensure,
 		$svc_enabled = $1::params::svc_enabled,
 		$svc_ensure  = $1::params::svc_ensure,
 	) inherits $1::params {
 
-		anchor { '$1::begin': }->
-		class { '$1::package': }->
-		class { '$1::config': }~>
-		class { '$1::service': }->
+		anchor { '$1::begin': }  ->
+		class { '$1::package': } ->
+		class { '$1::config': }  ~>
+		class { '$1::service': } ->
 		anchor { '$1::end': }
-
+		${4:}
 	}
 	# ex: set et sw=2 ts=2 ft=puppet:
 snippet ::class
@@ -225,7 +238,7 @@ snippet ::class
 	# == Examples
 	#
 	class $1::$2 {
-		${3:# statements}
+		${4:# statements}
 	}
 snippet ::config File
 	# Class: $1::config
@@ -234,18 +247,17 @@ snippet ::config File
 	#
 	# *Note:* This class should not be used externally.
 	#
-	# == Requires
-	#   This requires $$1::config_file to be defined.
-	#
 	class ${1:parentclass}::config {
+		$config_file = $$1::config_file
 
-		file { $$1::config_file:
+		file { $config_file:
 			ensure => ${2:file}
-	    owner  => '${3:root}',
-	    group  => '${4:$3}',
-	    mode   => '${5:0444}',
-	    source => "puppet:///modules/${module_name}/${6:configfile}",
-	  }
+			owner  => '${3:root}',
+			group  => '${4:$3}',
+			mode   => '${5:0644}',
+			source => "puppet:///modules/${module_name}/${6:configfile}",
+		}
+		${7:}
 	}
 	# ex: set et sw=2 ts=2 ft=puppet:
 snippet ::config Template
@@ -259,14 +271,16 @@ snippet ::config Template
 	#   This requires $$1::config_file to be defined.
 	#
 	class ${1:parentclass}::config {
+		$config_file = $$1::config_file
 
-		file { $$1::config_file:
+		file { $config_file:
 			ensure  => ${2:file}
-	    owner   => '${3:root}',
-	    group   => '${4:$3}',
-	    mode    => '${5:0444}',
-	    content => template("${module_name}/${6:configfile}.erb",
-	  }
+			owner   => '${3:root}',
+			group   => '${4:$3}',
+			mode    => '${5:0644}',
+			content => template("${module_name}/${6:configfile}.erb",
+		}
+		${7:}
 	}
 	# ex: set et sw=2 ts=2 ft=puppet:
 snippet ::config Concat Module
@@ -282,31 +296,35 @@ snippet ::config Concat Module
 	#   Depends on Class['concat::setup']
 	#
 	class ${1:parentclass}::config {
+		$config_file = $$1::config_file
 
-	  concat { $$1::config_file:
-	    owner => '${2:root}',
-	    group => '${3:$3}',
-	    mode  => '${4:0444}',
-	  }
+		concat { $config_file:
+			owner => '${2:root}',
+			group => '${3:$2}',
+			mode  => '${4:0644}',
+		}
 
-	  concat::fragment{"${$1::config_file}_global":
-	    target  => $$1::config_file,
-	    content => template("${module_name}/${5:chunk_template}${5:template}.erb"),
-	    order   => 10,
-	  }
+		concat::fragment{"${config_file}_global":
+			target  => $config_file,
+			content => template("${module_name}/${5:chunk_template}.erb"),
+			order   => 10,
+		}
+		${6:}
 	}
 	# ex: set et sw=2 ts=2 ft=puppet:
 snippet ::package
 	# This class will install the packages for $1.
 	#
 	# *Note*: This class should not be used externally.
-	class ${1:parentclass}::package (
-		$pkg_ensure = $$1::params::pkg_ensure,
-		$pkg_name   = $$1::params::pkg_name,
-	) inherits $1::params {
-	  package { $pkg_name:
-	  	ensure => $pkg_ensure,
-	  }
+	#
+	class ${1:parentclass}::package {
+		$pkg_name   = $$1::pkg_name,
+		$pkg_ensure = $$1::pkg_ensure,
+
+		package { $pkg_name:
+			ensure => $pkg_ensure,
+		}
+		${2:}
 	}
 
 	# ex: set ts=2 et sw=2 filetype=puppet:
@@ -315,28 +333,63 @@ snippet ::params
 	# module $1.
 	class ${1:parentclass}::params {
 
-		$pkg_ensure  = '${2:installed}'
-		$pkg_name  	 = '${3:$1}'
-	  $svc_enabled = ${4:true}
-	  $svc_name 	 = '${5:$1}'
+		$pkg_ensure  = '${2:present}'
+		$svc_enabled = ${3:true}
+
+		case ${::osfamily}: {
+			'redhat': {
+				$pkg_name    = '${4:$1}'
+				$svc_name    = '${5:$1}'
+			}
+			default: {
+				fail("${module_name}: Unsupported platform ${::operatingsystem}.")
+			}
+		}
 
 		${6:# Extra params here...}
 	}
 	# ex: set ts=2 et sw=2 ft=puppet:
 snippet ::service
 	# This class manages services for $1.
-	class ${1:parentclass}::service ($enabled = $$1::enabled){
-	  if $enabled == 'true' {
-	    $ensure = 'running'
-	  } else {
-	    $ensure = 'stopped'
-	  }
+	class ${1:parentclass}::service {
+		$enabled     = $$1::enabled
+		$servicename = $$1::servicename
 
-	  service { '${2:servicename}' :
-	    ensure     => $ensure,
-	    enable     => $enabled,
-	    hasstatus  => true,
-	    hasrestart => true,
-	  }
+		if ($enabled) {
+			$ensure = 'running'
+		} else {
+			$ensure = 'stopped'
+		}
+
+		service { $servicename:
+			ensure     => $ensure,
+			enable     => $enabled,
+			hasstatus  => ${2:true},
+			hasrestart => ${3:true},
+		}
+		${4:}
 	}
 	# ex: set ts=2 et sw=2 ft=puppet:
+snippet ::profile
+	# Profile $1
+	class profile::${1:myprofile} {
+		include profile::base::settings
+
+		${7:global_setting1} = profile::base::settings::$7
+
+	  $${2:param1} = hiera('profile::$1::$2')
+	  $${3:param2} = hiera('profile::$1::$3')
+	  $${4:param3} = str2bool(hiera('profile::$1::$4')
+
+	  if ($4) {
+		  $${5:param4} = hiera('profile::$1::$5')
+	  }
+
+	  class { '${6:component_class}':
+	  	$2 => $$2,
+	  	$3 => $$3,
+	  	$4 => $$4,
+	  	$5 => $$5,
+	  }
+	  ${8:}
+	}
