@@ -12,7 +12,7 @@ function create_link() {
     echo "WARNING: ~/.${FILE} is a symlink. Skipping it"
     return
   fi
-  if [ -f ~/.$FILE ]
+  if [ -f ~/.$FILE  -o -d ~/.$FILE ]
   then
     mv ~/.$FILE{,.$SUFFIX}
   fi
