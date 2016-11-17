@@ -61,7 +61,9 @@ endfunction
 
 set diffopt+=iwhite
 
-set mouse=a
+if has('mouse')
+  set mouse=a
+endif
 
 "set t_Co=256
 set background=dark
